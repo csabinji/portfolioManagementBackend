@@ -19,6 +19,17 @@ module.exports = {
             res.status(401).json({ error: error });
         }
     },
+    getUserStocks: async (req, res, next) => {
+        try {
+            const userId = req.User[`_id`];
+            const stocks = await UserStock.find({ userId: userId })
+                .populate({ path: `boughtStocks`})
+                .populate({ path: `boughtStocks.stock`, select: `stockName` })
+            res.status(200).json({ status: true, message: `All Stocks Retrieved!`, data: stocks });
+        } catch (error) {
+            res.status(401).json({ error: error });
+        }
+    },
     buySellStock: async (req, res, next) => {
         try {
             const userId = req.User[`_id`];
