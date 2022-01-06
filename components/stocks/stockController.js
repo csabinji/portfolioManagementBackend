@@ -23,8 +23,6 @@ module.exports = {
         try {
             const userId = req.User[`_id`];
             const stocks = await UserStock.find({ userId: userId })
-                .populate({ path: `boughtStocks`})
-                .populate({ path: `boughtStocks.stock`, select: `stockName` })
             res.status(200).json({ status: true, message: `All Stocks Retrieved!`, data: stocks });
         } catch (error) {
             res.status(401).json({ error: error });
@@ -33,28 +31,17 @@ module.exports = {
     buySellStock: async (req, res, next) => {
         try {
             const userId = req.User[`_id`];
-            const { stockId, status } = req.params;
-            const { total, price } = req.body;
+            const { status } = req.params;
+            const { stockName, total, price } = req.body;
+            let resMessage = ``;
             const today = new Date();
-            if (status === `buy`) {
-                await UserStock.findOneAndUpdate(
-                    { userId: userId },
-                    { $push: { boughtStocks: { stock: stockId, total, price, transactionDate: today } } },
-                    { upsert: true }
-                );
-                res.status(200).json({ status: true, message: `Stocks Bought Successfully!` });
-            } else if (status === `sell`) {
-                await UserStock.findOneAndUpdate(
-                    { userId: userId },
-                    {
-                        $push: { soldStocks: { stock: stockId, total, price, transactionDate: today } },
-                    },
-                    { upsert: true }
-                );
-                res.status(200).json({ status: true, message: `Stock Sold!` });
-            } else {
-                res.status(401).json({ status: false, message: `You donot have this script in your stock!` });
-            }
+            await UserStock.findOneAndUpdate(
+                { userId: userId },
+                { stockName, status: `${status}`, total, price, transactionDate: today }
+            );
+            resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
+            res.status(200).json({ status: true, message: resMessage });
+
         } catch (error) {
             res.status(401).json({ error: error });
         }

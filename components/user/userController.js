@@ -7,9 +7,7 @@ module.exports = {
             const { username, password } = req.body;
             const user = await User.findOne({ username: username, password: password });
             if (!user) {
-                if (user[`username`]) {
-                    res.status(401).json({ success: false, message: `Username and Password donot match!` });
-                }
+                
                 await User.create(req.body);
             }
             const token = jwt.sign({ uid: user._id }, JWT_SECRET)
