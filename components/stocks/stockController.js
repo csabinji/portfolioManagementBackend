@@ -66,20 +66,18 @@ module.exports = {
     },
     dashboard: async (req, res, next) => {
         try {
-            const userId = req.User[`_id`];
-            const total = await UserStock.aggregate([{
-                $match: {
-                    userId: userId
-                }
-            },
-            {
-                $addFields: {
-                    totalUnits: { $sum: `$boughtStocks.total` },
-                    total: { $multiply: ["$boughtStocks.total", "$boughtStocks.price"] }
-                }
-            }
-            ])
-            console.log(total);
+            const totalUnit = await UserStock.aggregate(
+                [
+                    {
+                        $group:
+                        {
+                            _id: null,
+                            total: { $sum: "$total" }
+                        }
+                    }
+                ]
+            )
+            res.status(200).json({ status: true, data: totalUnit })
         } catch (error) {
             res.status(401).json({ error: error });
         }

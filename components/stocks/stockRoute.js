@@ -7,7 +7,7 @@ router
     .post(`/addStock`, stockController.addStock)
     .get(`/getStocks`, stockController.getStocks)
     .post(`/buySellStock/:status`, stockController.buySellStock)
-    .get(`/dashboard`, verifyUser, stockController.dashboard)
+    .get(`/dashboard`, stockController.dashboard)
     .get(`/getUserStocks`, stockController.getUserStocks)
     .get(`/transactionHistory`, stockController.transactionHistory)
 
