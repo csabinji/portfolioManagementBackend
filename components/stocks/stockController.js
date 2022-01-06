@@ -30,15 +30,11 @@ module.exports = {
     },
     buySellStock: async (req, res, next) => {
         try {
-            const userId = req.User[`_id`];
             const { status } = req.params;
             const { stockName, total, price } = req.body;
             let resMessage = ``;
             const today = new Date();
-            await UserStock.findOneAndUpdate(
-                { userId: userId },
-                { stockName, status: `${status}`, total, price, transactionDate: today }
-            );
+            await UserStock.create({ stockName, total, price, transactionDate: today, status: `${status}` });
             resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
             res.status(200).json({ status: true, message: resMessage });
 
