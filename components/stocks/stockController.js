@@ -30,10 +30,9 @@ module.exports = {
     buySellStock: async (req, res, next) => {
         try {
             const { status } = req.params;
-            const { stockName, total, price } = req.body;
+            const { stockName, total, price, transactionDate } = req.body;
             let resMessage = ``;
-            const today = new Date();
-            await UserStock.create({ stockName, total, price, transactionDate: today, status: `${status}` });
+            await UserStock.create({ stockName, total, price, transactionDate, status: `${status}` });
             resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
             res.status(200).json({ status: true, message: resMessage });
 
