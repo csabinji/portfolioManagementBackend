@@ -66,18 +66,39 @@ module.exports = {
     },
     dashboard: async (req, res, next) => {
         try {
-            const totalUnit = await UserStock.aggregate(
+            const total = await UserStock.aggregate(
                 [
                     {
                         $group:
                         {
                             _id: null,
-                            total: { $sum: "$total" }
+                            total: { $sum: "$total" },
+                            currentAmount: { $sum: { $multiply: ["$price", "$total"] } }
                         }
                     }
                 ]
             )
-            res.status(200).json({ status: true, data: totalUnit })
+            const investment = await TransactionHistory.aggregate([
+                { $match: { status: `buy` } },
+
+                {
+                    $group: {
+                        _id: null,
+                        totalInvestment: { $sum: { $multiply: ["$price", "$total"] } }
+                    }
+                }]
+            )
+            const sold = await TransactionHistory.aggregate([
+                { $match: { status: `sell` } },
+
+                {
+                    $group: {
+                        _id: null,
+                        soldAmount: { $sum: { $multiply: ["$price", "$total"] } }
+                    }
+                }]
+            )
+            res.status(200).json({ status: true, data: { total, investment, sold } })
         } catch (error) {
             res.status(401).json({ error: error });
         }
