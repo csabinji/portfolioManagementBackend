@@ -9,5 +9,6 @@ router
     .post(`/buySellStock/:status`, stockController.buySellStock)
     .get(`/dashboard`, verifyUser, stockController.dashboard)
     .get(`/getUserStocks`, stockController.getUserStocks)
+    .get(`/transactionHistory`, stockController.transactionHistory)
 
 module.exports = router;

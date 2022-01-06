@@ -1,6 +1,6 @@
 const Stock = require(`../../models/stock`);
-const User = require(`../../models/user`);
 const UserStock = require("../../models/userStock");
+const TransactionHistory = require(`../../models/transactionHistory`);
 
 module.exports = {
     addStock: async (req, res, next) => {
@@ -27,12 +27,21 @@ module.exports = {
             res.status(401).json({ error: error });
         }
     },
+    transactionHistory: async (req, res, next) => {
+        try {
+            const transactions = await TransactionHistory.find().lean();
+            res.status(200).json({ status: true, message: `Transaction Retrieved Successfully!`, data: transactions });
+        } catch (error) {
+            res.status(401).json({ error: error });
+        }
+    },
     buySellStock: async (req, res, next) => {
         try {
             const { status } = req.params;
             const { stockName, total, price, transactionDate } = req.body;
             let resMessage = ``;
             await UserStock.create({ stockName, total, price, transactionDate, status: `${status}` });
+            await TransactionHistory.create({ status: `${status}`, ...req.body })
             resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
             res.status(200).json({ status: true, message: resMessage });
 
