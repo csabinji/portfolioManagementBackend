@@ -38,9 +38,24 @@ module.exports = {
     buySellStock: async (req, res, next) => {
         try {
             const { status } = req.params;
-            const { stockName, total, price, transactionDate } = req.body;
+            const { stockName } = req.body;
             let resMessage = ``;
-            await UserStock.create({ stockName, total, price, transactionDate, status: `${status}` });
+            const alreadyBought = await UserStock.findOne({ stockName: stockName })
+            if (alreadyBought) {
+                if (status === `sell`) {
+                    if (alreadyBought[`stockName`] !== stockName) {
+                        res.status(401).json({ success: false, message: `You donot Have this Script!` });
+                    } else if (alreadyBought[`total`] < req.body[`total`]) {
+                        res.status(401).json({ success: false, message: `You donot have enough Share units` })
+                    }
+                }
+                const total = status === `buy` ? parseInt(req.body[`total`]) : -parseInt(req.body[`total`]);
+                const price = status === `buy` ? (alreadyBought[`price`] + parseInt(req.body[`price`])) / 2 : req.body[`price`]
+                console.log(parseInt(req.body[`price`]))
+                await UserStock.updateOne({ stockName: stockName }, { $inc: { total }, price })
+            } else {
+                await UserStock.create({ status: `${status}`, ...req.body });
+            }
             await TransactionHistory.create({ status: `${status}`, ...req.body })
             resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
             res.status(200).json({ status: true, message: resMessage });
