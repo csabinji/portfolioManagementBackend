@@ -8,6 +8,6 @@ router
     .get(`/getStocks`, stockController.getStocks)
     .get(`/buySellStock/:stockId/:status`, verifyUser, stockController.buySellStock)
     .get(`/dashboard`, verifyUser, stockController.dashboard)
-    .get(`/getUserStocks`, verifyUser, stockController.getUserStocks)
+    .get(`/getUserStocks`, stockController.getUserStocks)
 
 module.exports = router;

@@ -21,8 +21,7 @@ module.exports = {
     },
     getUserStocks: async (req, res, next) => {
         try {
-            const userId = req.User[`_id`];
-            const stocks = await UserStock.find({ userId: userId })
+            const stocks = await UserStock.find().lean();
             res.status(200).json({ status: true, message: `All Stocks Retrieved!`, data: stocks });
         } catch (error) {
             res.status(401).json({ error: error });
