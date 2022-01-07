@@ -27,6 +27,15 @@ module.exports = {
             res.status(401).json({ error: error });
         }
     },
+    getEachStock: async (req, res, next) => {
+        try {
+            const { stockId } = req.params
+            const stock = await UserStock.findOne({ _id: stockId }).lean();
+            res.status(200).json({ status: true, message: `Stock Retrieved!`, data: stock });
+        } catch (error) {
+            res.status(401).json({ error: error });
+        }
+    },
     transactionHistory: async (req, res, next) => {
         try {
             const transactions = await TransactionHistory.find().lean();

@@ -10,5 +10,6 @@ router
     .get(`/dashboard`, stockController.dashboard)
     .get(`/getUserStocks`, stockController.getUserStocks)
     .get(`/transactionHistory`, stockController.transactionHistory)
+    .get(`/getEachStock/:stockId`, stockController.getEachStock)
 
 module.exports = router;
