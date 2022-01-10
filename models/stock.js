@@ -1,7 +1,9 @@
 const mongoose = require(`mongoose`);
 
 const Stock = mongoose.model(`Stock`, {
-    stockName: String
+    stockName: {
+        type: String
+    },
 })
 
 module.exports = Stock;
