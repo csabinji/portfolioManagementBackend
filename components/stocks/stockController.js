@@ -77,7 +77,8 @@ module.exports = {
     },
     transactionHistory: async (req, res, next) => {
         try {
-            const transactions = await TransactionHistory.find().lean();
+            const transactions = await TransactionHistory.find()
+                .populate({ path: `stockId`, select: `stockName` })
             res.status(200).json({ status: true, message: `Transaction Retrieved Successfully!`, data: transactions });
         } catch (error) {
             res.status(401).json({ error: error });
