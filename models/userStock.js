@@ -10,9 +10,6 @@ const UserStock = mongoose.model(`UserStock`, {
     price: {
         type: Number
     },
-    amount: {
-        type: Number
-    },
     lastTransaction: {
         type: Date
     }
