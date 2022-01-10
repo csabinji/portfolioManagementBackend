@@ -7,6 +7,12 @@ const TransactionHistory = mongoose.model(`TransactionHistory`, {
         ref: 'UserStock',
         required: true
     },
+    total: {
+        type: Number
+    },
+    price: {
+        type: Number
+    },
     transactionDate: {
         type: Date
     },
