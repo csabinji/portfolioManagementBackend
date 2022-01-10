@@ -1,8 +1,7 @@
 const mongoose = require(`mongoose`);
 
 const Stock = mongoose.model(`Stock`, {
-    stockName: String,
-    pricePerUnit: Number,
+    stockName: String
 })
 
 module.exports = Stock;
