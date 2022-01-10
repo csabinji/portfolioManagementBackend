@@ -1,6 +1,7 @@
 const Stock = require(`../../models/stock`);
 const UserStock = require("../../models/userStock");
 const TransactionHistory = require(`../../models/transactionHistory`);
+const { ObjectId } = require(`mongoose`).Types;
 
 module.exports = {
     addStock: async (req, res, next) => {
@@ -30,8 +31,46 @@ module.exports = {
     getEachStock: async (req, res, next) => {
         try {
             const { stockId } = req.params
-            const stock = await UserStock.findOne({ _id: stockId }).lean();
-            res.status(200).json({ status: true, message: `Stock Retrieved!`, data: stock });
+            const stock = await TransactionHistory.aggregate([
+                { $match: { stockId: ObjectId(stockId) } },
+                {
+                    $lookup: {
+                        from: `userstocks`,
+                        localField: `stockId`,
+                        foreignField: `_id`,
+                        as: `userstock`,
+                    }
+                },
+                { $unwind: `$userstock` },
+                {
+                    $addFields: {
+                        totalUnits: { $sum: `$userstock.total` },
+                        currentAmount: { $sum: { $multiply: ["$userstock.price", "$userstock.total"] } }
+                    },
+                }
+            ]);
+            const investment = await TransactionHistory.aggregate([
+                { $match: { stockId: ObjectId(stockId), status: `buy` } },
+
+                {
+                    $group: {
+                        _id: null,
+                        totalInvestment: { $sum: { $multiply: ["$price", "$total"] } }
+                    }
+                },
+            ]
+            )
+            const sold = await TransactionHistory.aggregate([
+                { $match: { stockId: ObjectId(stockId), status: `sell` } },
+
+                {
+                    $group: {
+                        _id: null,
+                        soldAmount: { $sum: { $multiply: ["$price", "$total"] } }
+                    }
+                }]
+            )
+            res.status(200).json({ status: true, message: `Stock Retrieved!`, data: { stock, investment, sold } });
         } catch (error) {
             res.status(401).json({ error: error });
         }
@@ -60,12 +99,12 @@ module.exports = {
                 }
                 const total = status === `buy` ? parseInt(req.body[`total`]) : -parseInt(req.body[`total`]);
                 const price = status === `buy` ? (alreadyBought[`price`] + parseInt(req.body[`price`])) / 2 : req.body[`price`]
-                console.log(parseInt(req.body[`price`]))
                 await UserStock.updateOne({ stockName: stockName }, { $inc: { total }, price })
             } else {
                 await UserStock.create({ status: `${status}`, ...req.body });
             }
-            await TransactionHistory.create({ status: `${status}`, ...req.body })
+            const userStock = await UserStock.findOne({ stockName: stockName })
+            await TransactionHistory.create({ stockId: userStock[`_id`], status: `${status}`, ...req.body })
             resMessage = status === `buy` ? `Stocks Bought Successfully!` : `Stocks Sold Successfully!`
             res.status(200).json({ status: true, message: resMessage });
 
@@ -95,7 +134,8 @@ module.exports = {
                         _id: null,
                         totalInvestment: { $sum: { $multiply: ["$price", "$total"] } }
                     }
-                }]
+                },
+            ]
             )
             const sold = await TransactionHistory.aggregate([
                 { $match: { status: `sell` } },
