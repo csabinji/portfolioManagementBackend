@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 const TransactionHistory = mongoose.model(`TransactionHistory`, {
     stockId: {
         type: ObjectId,
-        ref: 'UserStock',
+        ref: `UserStock`,
         required: true
     },
     total: {

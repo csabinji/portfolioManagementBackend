@@ -1,6 +1,4 @@
-const Stock = require(`../../models/stock`);
-const UserStock = require("../../models/userStock");
-const TransactionHistory = require(`../../models/transactionHistory`);
+const { Stock, UserStock, TransactionHistory } = require(`../../models`);
 const { ObjectId } = require(`mongoose`).Types;
 
 module.exports = {

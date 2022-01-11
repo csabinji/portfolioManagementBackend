@@ -1,7 +1,6 @@
 const express = require('express');
 const stockController = require('./stockController');
 const router = express.Router();
-const { verifyUser } = require(`../../middleware/authUser`)
 
 router
     .post(`/addStock`, stockController.addStock)

@@ -15,8 +15,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(
-    stockRoute,
-    userRoute
+    stockRoute
 );
 
 const port = PORT || `4001`;
