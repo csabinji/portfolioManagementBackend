@@ -3,7 +3,6 @@ const stockController = require('./stockController');
 const router = express.Router();
 
 router
-    .post(`/addStock`, stockController.addStock)
     .get(`/getStocks`, stockController.getStocks)
     .post(`/buySellStock/:status`, stockController.buySellStock)
     .get(`/dashboard`, stockController.dashboard)
